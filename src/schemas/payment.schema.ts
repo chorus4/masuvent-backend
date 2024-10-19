@@ -8,7 +8,8 @@ export class Payment {
 	@Prop({ required: true })
 	email: string
 
-	telegram: string
+	@Prop({ required: true })
+	fio: string
 
 	@Prop({ required: true, enum: ['BABY', 'BIG'] })
 	size: string
@@ -20,14 +21,16 @@ export class Payment {
 	city: string
 
 	@Prop({ required: true })
-	department: string
+	address: string
+
+	@Prop({ required: true })
+	feedback: string
 
 	@Prop({ required: true })
 	phone: string
 
-	instagram: string
-
-	promo: string
+	@Prop({ required: true })
+	paymentType: string
 
 	@Prop({ required: true })
 	acquiringId: string

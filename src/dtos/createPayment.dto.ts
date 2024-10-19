@@ -1,27 +1,31 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, ValidatorOptions } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator'
 
 export class CreatePaymentDto {
 	@IsEmail()
 	email: string
 
-	telegram: string
+	@IsNotEmpty()
+	fio: string
 
 	@IsNotEmpty()
-	size: string
-
-	@IsNotEmpty()
-	country: string
+	address: string
 
 	@IsNotEmpty()
 	city: string
 
 	@IsNotEmpty()
-	department: string
+	feedback: string
 
-	@IsPhoneNumber()
+	@IsNotEmpty()
+	@IsNumber()
 	phone: string
 
-	instagram: string
+	@IsNotEmpty()
+	country: string
 
-	promo: string
+	@IsNotEmpty()
+	size: string
+
+	@IsNotEmpty()
+	paymentType: string
 }
