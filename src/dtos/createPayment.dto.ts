@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator'
 
 export class CreatePaymentDto {
 	@IsEmail()
@@ -14,18 +14,23 @@ export class CreatePaymentDto {
 	city: string
 
 	@IsNotEmpty()
-	feedback: string
-
-	@IsNotEmpty()
-	@IsNumber()
-	phone: string
-
-	@IsNotEmpty()
 	country: string
 
 	@IsNotEmpty()
-	size: string
+	deliveryType: string
+
+	@IsNotEmpty()
+	feedback: string
+
+	@IsNotEmpty()
+	@IsPhoneNumber()
+	phone: string
 
 	@IsNotEmpty()
 	paymentType: string
+
+	@IsNotEmpty()
+	products: []
+
+	token: string
 }

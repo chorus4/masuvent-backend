@@ -1,44 +1,26 @@
-import { HttpService } from '@nestjs/axios'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { JWT } from 'google-auth-library'
 import { GoogleSpreadsheet } from 'google-spreadsheet'
 import { Model } from 'mongoose'
-import { lastValueFrom } from 'rxjs'
 import { CreatePaymentDto } from 'src/dtos/createPayment.dto'
+import { MonoService } from 'src/mono/mono.service'
 import { Payment } from 'src/schemas/payment.schema'
 
-
-const api_key = ""
-
-interface CreateePaymentDto extends CreatePaymentDto {
-	api: string
-} 
-// const serviceAccountAuth = {
-// 	type: 'service_account',
-// 	project_id: 'masuvent',
-// 	private_key_id: 'd4e42ffee22e1d2334a3cd3478f5b38fd0c67890',
-// 	private_key:
-// 		'-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDCCojucyPsT62h\nRTIKBG+HtQ1XOr+HDlavlkuxtpUSsRWMIsljNT2CrUNdahRa0NypJ1/T7me2Q1b3\nDjhBrNI7XBWy8EMKn5RQgE66cq25KmcKzIndsX8pRquaV6w6FoBIgvBYsG0OhiZl\nYGVCCKiwzLe+Bpo009qll4JsetIZLHkfSka+5f+4w7ei8ZmeP2OPnwPOIPoO8ZbJ\n5YsLS+GCG0d1wyJhfWctD/JNq13p+7HbpI8MdEb4FgHYIOoHgumWO0filtp7Gb/R\nJe8s4DhsfeHF5MksrUC7dVHZRPsuKOElPWjp35y8CdN4bCldJJxRm1HYn6msPBCM\nVV2mGUgRAgMBAAECggEAH+G7PfKNJHazAJxt7FduO83zszFj5rzkYVVAeqKVO8z8\nzVmp3TMSODZfqymSzpkiqGhfxmKVh8zorQ8ZDzFmGXq31f7EBSrTI6bxSJEvGg1t\ngMi6nkJbslx6NZHSKnkn+sII24mhYZGJHX8JJCBoFySLzB0pmSR1+F88frZvbtMm\nENc5xLVmY/WkSTvJA4PqepeB6X6TDhlcAcrOKzwXeoYZCQAaUHuSg7fq4ZsNHWeF\nJ1YVHyWZ3Vjzuw7MpMOiU/DcLuxuTCOIjl06QQTjNobSIU87izdKom0J7DPtSb/T\nBG0NIRalM9jRZvSE/UzRCh0iUhXl3OBHYho7xnJKQQKBgQD7EMmrjUQr0zvYQPmu\nUsqqGmBgpjZ5gVlSTGSzA1Z0f7ZfuCe4DiXgHj6X3q0dPy8pCSlF+4eerQPN2FWf\nzqrZNsRGu8XW/daYnIVwq9H4/zfwPhqLdHO8USPV4ioi/1NSkKkAwaGBoc9CbkKP\nd0BguNdqkL8xmkl3GeiQa1lcHwKBgQDF2tWPf6GQWIBy/9O6nzbE57GY3JaE0QIn\nsjcMwt1ln+6FPfXeVFfWMfIZip7OWaqeiAoDtiM4Almwq6snhazpZLboDSAzNtjp\n6xMqev1o/3vApc7havBYDzk58E8ctS3iKhHlupoCgh8Nz9KWz8lDzOvtxBFZksCq\n41x+2o7VzwKBgApc0gYbqZGpgVHWtLeGQUkuF4ZFtf/j39zuvEVLQPlEADIJNtJ4\n+wU6GllIXprTbc3iy+pQjHN3Lq4DXN1guVqH0SgePfc2uPHJnBRfcyY02ok29v+E\nifZe3vzH/fc91KGWyPL4CwN/uz9Br8ueH3Eej/2dBdc1SAz7a8byN1j/AoGBAI+k\nnL+dzdJaLodPLIyk4sJ54/oyzCSJCaOAQ29EWjBZuHWL0mEjotGjWT0p4rm1Z6XI\n5lxjc5ZKPouBVrVO24Zm1FQMk4AbJchOHpAM0sXUFih7OIN3fB6yjr19tjIFZ9Z2\n7J94pi+EAL+qTh2npVtP/0mTu3ToknB+uLxwOJsJAoGAGIChsHMruO6u5d5SAad2\n8hJg0tVrosZjX4+kdEmzAUe3jSUUIUu1AkPhn/rbRj9NurowakiwxFJcacuU02Dq\nM+qsWF4DVoTdifuHEF1LWuroBY4WtCfu265aDsyC2mT/lJit1McwGkEMrbKGKE3y\nwmswtvAJhzV7QDxoboXT3LU=\n-----END PRIVATE KEY-----\n',
-// 	client_email: 'back-992@masuvent.iam.gserviceaccount.com',
-// 	client_id: '107516700603031641678',
-// 	auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-// 	token_uri: 'https://oauth2.googleapis.com/token',
-// 	auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-// 	client_x509_cert_url:
-// 		'https://www.googleapis.com/robot/v1/metadata/x509/back-992%40masuvent.iam.gserviceaccount.com',
-// 	universe_domain: 'googleapis.com'
-// }
-
-const deliveryPrices = {
-
+const prices = {
+	hoodie: 2700,
+	zip: 2700,
+	pants: 2700,
+	patchedHoodie: 2700
 }
 
 @Injectable()
 export class PaymentService {
 	constructor(
-		private readonly httpService: HttpService,
-		@InjectModel(Payment.name) private paymentModel: Model<Payment>
+		private readonly monoService: MonoService,
+		@InjectModel(Payment.name) private paymentModel: Model<Payment>,
+		private jwtService: JwtService
 	) {}
 
 	async getCredentials() {
@@ -50,26 +32,97 @@ export class PaymentService {
 			scopes: ['https://www.googleapis.com/auth/spreadsheets']
 		})
 
-		console.log(process.env.GOOGLE_PRIVATE_KEY)
 		return creds
 	}
 
 	async createPayment(createPaymentDto: CreatePaymentDto) {
-		const { data } = await lastValueFrom(
-			this.httpService.post(
-				`${process.env.MONO_URL}/merchant/invoice/create`,
-				{
-					amount:
-						createPaymentDto.paymentType == 'nalozh' ? 250 * 100 : 2775 * 100,
-					redirectUrl: process.env.THANKS_URL,
-					webHookUrl: process.env.API_URL
-				},
-				{ headers: { 'X-Token': process.env.MONO_API } }
-			)
+		let skip = false
+
+		console.log(createPaymentDto?.token)
+
+		try {
+			const payload = await this.jwtService.verifyAsync(createPaymentDto?.token)
+
+			if (payload.auth) skip = true
+		} catch {}
+
+		const products = createPaymentDto.products
+		console.log(products)
+		let amount = products.reduce(
+			(acc, curVal: { type; count }) =>
+				acc + prices[curVal.type] * curVal.count,
+			0
 		)
+
+		switch (createPaymentDto.deliveryType) {
+			case 'poland':
+				amount = amount + 450
+				break
+			case 'germany':
+				amount = amount + 600
+				break
+			case 'inter':
+				amount = 1250
+				break
+		}
+
+		// console.log({
+		// 	...createPaymentDto,
+		// 	country:
+		// 		createPaymentDto.deliveryType == 'poland' ||
+		// 		createPaymentDto.deliveryType == 'germany' ||
+		// 		createPaymentDto.deliveryType == 'ukraine'
+		// 			? createPaymentDto.deliveryType
+		// 			: createPaymentDto.country,
+		// 	price: amount
+		// 	// acquiringId: data.invoiceId
+		// })
+
+		if (skip) {
+			const serviceAccountAuth = await this.getCredentials()
+
+			const doc = new GoogleSpreadsheet(
+				'1Vxp1yKqXouji6UMUHzHEAqoyN2qZ-2TpzTiqIaoyrM0',
+				serviceAccountAuth
+			)
+
+			// console.log(doc);
+			await doc.loadInfo()
+			const sheet = doc.sheetsByIndex[0]
+
+			const text = createPaymentDto.products.reduce<any>(
+				(acc, curVal: { type; count; size; color }) =>
+					acc +
+					`${curVal.type} - ${curVal.size} - ${curVal.color} (${curVal.count}): ${prices[curVal.type] * curVal.count}\n`,
+				''
+			)
+
+			await sheet.addRow({
+				ФИО: createPaymentDto.fio,
+				Email: createPaymentDto.email,
+				Адрес: createPaymentDto.address,
+				Город: createPaymentDto.city,
+				Страна: createPaymentDto.country,
+				'Обратная связь': createPaymentDto.feedback,
+				'Номер телефона': createPaymentDto.phone,
+				Товары: text,
+				Оплата: createPaymentDto.paymentType
+			})
+
+			return
+		}
+
+		const data = await this.monoService.createInvoice(amount * 100)
 
 		const payment = new this.paymentModel({
 			...createPaymentDto,
+			country:
+				createPaymentDto.deliveryType == 'poland' ||
+				createPaymentDto.deliveryType == 'germany' ||
+				createPaymentDto.deliveryType == 'ukraine'
+					? createPaymentDto.deliveryType
+					: createPaymentDto.country,
+			price: amount,
 			acquiringId: data.invoiceId
 		})
 
@@ -87,11 +140,13 @@ export class PaymentService {
 		const payment = await this.paymentModel.findOne({ acquiringId: invoiceId })
 		if (!payment) return
 
+		if (payment.paymentStatus == 'success') return
+
 		payment.paymentStatus = 'success'
 
 		await payment.save()
 
-		console.log(payment)
+		// console.log(payment)
 
 		// TODO: Add google sheets
 
@@ -106,32 +161,13 @@ export class PaymentService {
 		await doc.loadInfo()
 		const sheet = doc.sheetsByIndex[0]
 
-		await sheet.addRow({
-			ФИО: payment.fio,
-			Email: payment.email,
-			Адрес: payment.address,
-			Город: payment.city,
-			Страна: payment.country,
-			'Обратная связь': payment.feedback,
-			'Номер телефона': payment.phone,
-			Оплата: payment.paymentType
-		})
-	}
-
-	async bc(payment: CreateePaymentDto) {
-		if (payment.api !== api_key) throw new NotFoundException()
-
-		const serviceAccountAuth = await this.getCredentials()
-
-		const doc = new GoogleSpreadsheet(
-			'1Vxp1yKqXouji6UMUHzHEAqoyN2qZ-2TpzTiqIaoyrM0',
-			serviceAccountAuth
+		const text = payment.products.reduce<any>(
+			(acc, curVal: { type; count; size; color }) =>
+				acc +
+				`${curVal.type} - ${curVal.size} - ${curVal.color} (${curVal.count}): ${prices[curVal.type] * curVal.count}\n`,
+			''
 		)
 
-		// console.log(doc);
-		await doc.loadInfo()
-		const sheet = doc.sheetsByIndex[0]
-
 		await sheet.addRow({
 			ФИО: payment.fio,
 			Email: payment.email,
@@ -140,7 +176,12 @@ export class PaymentService {
 			Страна: payment.country,
 			'Обратная связь': payment.feedback,
 			'Номер телефона': payment.phone,
+			Товары: text,
 			Оплата: payment.paymentType
 		})
+
+		return {
+			success: true
+		}
 	}
 }

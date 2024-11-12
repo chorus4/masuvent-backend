@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { PaymentService } from './payment.service'
 import { CreatePaymentDto } from 'src/dtos/createPayment.dto'
+import { PaymentService } from './payment.service'
 
 @Controller('payment')
 export class PaymentController {
@@ -13,11 +13,6 @@ export class PaymentController {
 
 	@Post('/webhook')
 	webhook(@Body() webhookDto) {
-		this.paymentService.webhook(webhookDto)
-	}
-
-	@Post('/bc')
-	bc(@Body() dto) {
-		this.paymentService.bc(dto)
+		return this.paymentService.webhook(webhookDto)
 	}
 }
